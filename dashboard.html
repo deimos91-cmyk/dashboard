@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Personale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #00d4ff 0, #111427 45%, #05060a 100%);
+      color: #f5f5f5;
+      padding: 16px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 900px;
+      background: #050608dd;
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .app-sub {
+      font-size: 0.85rem;
+      opacity: 0.75;
+    }
+
+    .clock-block {
+      text-align: right;
+    }
+
+    .clock-time {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .clock-date {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .clock-block {
+        text-align: left;
+      }
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #242845, #101322);
+      border-radius: 20px;
+      padding: 14px 14px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      opacity: 0.8;
+    }
+
+    .card-body {
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .mood-text {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .mood-sub {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: #1f243d;
+      color: #f5f5f5;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #050608;
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(0, 242, 254, 0.25);
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+      box-shadow: none;
+      filter: brightness(0.95);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+
+    /* Meteo */
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .weather-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .weather-icon {
+      font-size: 1.8rem;
+    }
+
+    .weather-temp {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .weather-city {
+      font-size: 0.8rem;
+      opacity: 0.75;
+    }
+
+    .weather-extra {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      display: flex;
+      gap: 10px;
+      opacity: 0.8;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.24);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* To-do */
+
+    .todo-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .todo-input {
+      flex: 1;
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(4,5,10,0.8);
+      color: #f5f5f5;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .todo-input::placeholder {
+      color: rgba(245,245,245,0.4);
+    }
+
+    .todo-list {
+      list-style: none;
+      margin-top: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 12px;
+      margin-bottom: 4px;
+      background: rgba(15,17,30,0.9);
+      font-size: 0.85rem;
+    }
+
+    .todo-text {
+      flex: 1;
+      margin-right: 6px;
+    }
+
+    .todo-text.done {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .todo-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .todo-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 3px 7px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      background: rgba(255,255,255,0.06);
+      color: #f5f5f5;
+    }
+
+    .todo-btn.done {
+      background: rgba(0, 230, 118, 0.25);
+    }
+
+    .todo-btn.del {
+      background: rgba(255, 82, 82, 0.4);
+    }
+
+    /* Footer */
+
+    .footer {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      opacity: 0.6;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top-row">
+      <div class="title-block">
+        <div class="app-title">Dashboard</div>
+        <div class="app-sub">Una mini home-screen personale nel browser.</div>
+      </div>
+      <div class="clock-block">
+        <div class="clock-time" id="clockTime">--:--</div>
+        <div class="clock-date" id="clockDate">--</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Colonna sinistra -->
+      <div class="left-col">
+        <!-- Carta frase / mood -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>💭</span>
+              <span>FOCUS DEL GIORNO</span>
+            </div>
+            <button class="btn btn-primary" id="newQuoteBtn">Nuova frase</button>
+          </div>
+          <div class="card-body">
+            <div class="mood-text" id="moodText"></div>
+            <div class="mood-sub">Cambia quando vuoi, ma scegline una e rispettala davvero.</div>
+          </div>
+          <div class="meta-row">
+            <span id="quoteTag">Frase casuale</span>
+            <span id="sessionInfo"></span>
+          </div>
+        </div>
+
+        <!-- To-do -->
+        <div class="card" style="margin-top: 14px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>✅</span>
+              <span>TO-DO VELOCE</span>
+            </div>
+            <span class="pill" id="todoCount">0 task</span>
+          </div>
+          <div class="card-body">
+            <div>Scrivi cosa devi fare oggi e spunta quello che completi.</div>
+            <div class="todo-input-row">
+              <input id="todoInput" class="todo-input" type="text" placeholder="Aggiungi un task e premi Invio">
+              <button class="btn" id="todoAddBtn">Aggiungi</button>
+            </div>
+            <ul class="todo-list" id="todoList"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonna destra -->
+      <div class="right-col">
+        <!-- Meteo fake ma carino -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🌤️</span>
+              <span>METEO RAPIDO</span>
+            </div>
+            <button class="btn" id="weatherRefreshBtn">Aggiorna</button>
+          </div>
+          <div class="card-body">
+            <div class="weather-main">
+              <div class="weather-left">
+                <div class="weather-icon" id="weatherIcon">⛅</div>
+                <div>
+                  <div class="weather-temp" id="weatherTemp">--°C</div>
+                  <div class="weather-city" id="weatherCity">Luogo: offline</div>
+                </div>
+              </div>
+              <div class="pill" id="weatherStatus">Offline demo</div>
+            </div>
+            <div class="weather-extra">
+              <span class="tag" id="weatherFeel">Percepita: --°C</span>
+              <span class="tag" id="weatherMood">Mood: --</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Note veloci -->
+        <div class="card" style="margin-top: 14px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📝</span>
+              <span>NOTA VELOCE</span>
+            </div>
+            <button class="btn" id="clearNoteBtn">Pulisci</button>
+          </div>
+          <div class="card-body">
+            <textarea id="quickNote" rows="4" placeholder="Scrivi un pensiero veloce, una cosa da ricordare, un link, ecc."></textarea>
+            <div class="meta-row">
+              <span>Salvato solo su questo dispositivo.</span>
+              <span id="noteInfo"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Puoi salvare questa pagina sul telefono e usarla come mini-app.</span>
+      <span id="storageInfo"></span>
+    </div>
+  </div>
+
+  <script>
+    // === Orologio e data ===
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const days = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+      const months = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
+
+      const dayName = days[now.getDay()];
+      const day = now.getDate();
+      const month = months[now.getMonth()];
+      const year = now.getFullYear();
+
+      document.getElementById("clockTime").textContent = `${hh}:${mm}`;
+      document.getElementById("clockDate").textContent = `${dayName} ${day} ${month} ${year}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // === Frasi casuali ===
+    const quotes = [
+      "Un’ora fatta bene vale più di una giornata fatta a caso.",
+      "Se oggi fai il minimo sindacale, domani non ti puoi lamentare.",
+      "Non hai bisogno di motivazione, ti serve disciplina di base.",
+      "Chiudere una cosa iniziata ti dà più dopamina di qualsiasi scroll.",
+      "Non fare tutto, fai le 3 cose che contano davvero.",
+      "Non serve perfezione, serve costanza brutta ma quotidiana.",
+      "Ogni giorno hai un numero limitato di decisioni: non sprecarle in stronzate.",
+      "Se non lo fai tu, non lo fa nessuno al posto tuo."
+    ];
+
+    function randomQuote() {
+      const i = Math.floor(Math.random() * quotes.length);
+      return quotes[i];
+    }
+
+    const moodTextEl = document.getElementById("moodText");
+    const newQuoteBtn = document.getElementById("newQuoteBtn");
+    const quoteTagEl = document.getElementById("quoteTag");
+    const sessionInfoEl = document.getElementById("sessionInfo");
+
+    let sessionQuotes = 0;
+    function setNewQuote(initial = false) {
+      moodTextEl.textContent = randomQuote();
+      sessionQuotes += initial ? 0 : 1;
+      quoteTagEl.textContent = `Frase casuale · cambiate: ${sessionQuotes}`;
+      const now = new Date();
+      sessionInfoEl.textContent = `Sessione iniziata alle ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+    }
+
+    newQuoteBtn.addEventListener("click", () => setNewQuote());
+    setNewQuote(true);
+
+    // === To-do con localStorage ===
+    const todoInput = document.getElementById("todoInput");
+    const todoAddBtn = document.getElementById("todoAddBtn");
+    const todoListEl = document.getElementById("todoList");
+    const todoCountEl = document.getElementById("todoCount");
+
+    let todos = [];
+
+    function saveTodos() {
+      localStorage.setItem("dashboard_todos", JSON.stringify(todos));
+      updateTodoCount();
+      updateStorageInfo();
+    }
+
+    function loadTodos() {
+      try {
+        const raw = localStorage.getItem("dashboard_todos");
+        if (raw) {
+          todos = JSON.parse(raw);
+        }
+      } catch {
+        todos = [];
+      }
+      renderTodos();
+      updateTodoCount();
+    }
+
+    function updateTodoCount() {
+      const total = todos.length;
+      const done = todos.filter(t => t.done).length;
+      todoCountEl.textContent = `${total} task · ${done} completati`;
+    }
+
+    function renderTodos() {
+      todoListEl.innerHTML = "";
+      todos.forEach((todo, index) => {
+        const li = document.createElement("li");
+        li.className = "todo-item";
+
+        const span = document.createElement("span");
+        span.className = "todo-text";
+        if (todo.done) span.classList.add("done");
+        span.textContent = todo.text;
+
+        const btnRow = document.createElement("div");
+        btnRow.className = "todo-buttons";
+
+        const doneBtn = document.createElement("button");
+        doneBtn.className = "todo-btn done";
+        doneBtn.textContent = todo.done ? "Ripristina" : "Fatto";
+        doneBtn.addEventListener("click", () => {
+          todos[index].done = !todos[index].done;
+          saveTodos();
+          renderTodos();
+        });
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "todo-btn del";
+        delBtn.textContent = "X";
+        delBtn.addEventListener("click", () => {
+          todos.splice(index, 1);
+          saveTodos();
+          renderTodos();
+        });
+
+        btnRow.appendChild(doneBtn);
+        btnRow.appendChild(delBtn);
+
+        li.appendChild(span);
+        li.appendChild(btnRow);
+        todoListEl.appendChild(li);
+      });
+    }
+
+    function addTodoFromInput() {
+      const text = todoInput.value.trim();
+      if (!text) return;
+      todos.push({ text, done: false });
+      todoInput.value = "";
+      saveTodos();
+      renderTodos();
+    }
+
+    todoAddBtn.addEventListener("click", addTodoFromInput);
+    todoInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addTodoFromInput();
+    });
+
+    loadTodos();
+
+    // === Meteo demo (offline) ===
+    const weatherPresets = [
+      { icon: "☀️", temp: 24, feel: 26, status: "Sereno", mood: "Ottimo per uscire", city: "Locale" },
+      { icon: "🌤️", temp: 19, feel: 19, status: "Parzialmente nuvoloso", mood: "Buono per studiare con luce naturale", city: "Locale" },
+      { icon: "🌧️", temp: 14, feel: 12, status: "Pioggia leggera", mood: "Perfetto per chiudersi in casa a fare cose", city: "Locale" },
+      { icon: "⛈️", temp: 18, feel: 16, status: "Temporale", mood: "Cuffie + musica, ignora il mondo", city: "Locale" },
+      { icon: "🌫️", temp: 9, feel: 7, status: "Nebbia", mood: "Ambiente da film, ma concentrati", city: "Locale" }
+    ];
+
+    const weatherIconEl = document.getElementById("weatherIcon");
+    const weatherTempEl = document.getElementById("weatherTemp");
+    const weatherCityEl = document.getElementById("weatherCity");
+    const weatherStatusEl = document.getElementById("weatherStatus");
+    const weatherFeelEl = document.getElementById("weatherFeel");
+    const weatherMoodEl = document.getElementById("weatherMood");
+    const weatherRefreshBtn = document.getElementById("weatherRefreshBtn");
+
+    function randomWeather() {
+      const w = weatherPresets[Math.floor(Math.random() * weatherPresets.length)];
+      weatherIconEl.textContent = w.icon;
+      weatherTempEl.textContent = `${w.temp}°C`;
+      weatherCityEl.textContent = `Luogo: ${w.city}`;
+      weatherStatusEl.textContent = w.status;
+      weatherFeelEl.textContent = `Percepita: ${w.feel}°C`;
+      weatherMoodEl.textContent = `Mood: ${w.mood}`;
+    }
+
+    weatherRefreshBtn.addEventListener("click", randomWeather);
+    randomWeather();
+
+    // === Nota veloce con localStorage ===
+    const quickNoteEl = document.getElementById("quickNote");
+    const clearNoteBtn = document.getElementById("clearNoteBtn");
+    const noteInfoEl = document.getElementById("noteInfo");
+    const storageInfoEl = document.getElementById("storageInfo");
+
+    function loadNote() {
+      const raw = localStorage.getItem("dashboard_quick_note");
+      if (raw) quickNoteEl.value = raw;
+      updateNoteInfo();
+      updateStorageInfo();
+    }
+
+    function saveNote() {
+      localStorage.setItem("dashboard_quick_note", quickNoteEl.value);
+      updateNoteInfo();
+      updateStorageInfo();
+    }
+
+    function clearNote() {
+      quickNoteEl.value = "";
+      saveNote();
+    }
+
+    function updateNoteInfo() {
+      const len = quickNoteEl.value.length;
+      noteInfoEl.textContent = `Caratteri: ${len}`;
+    }
+
+    function updateStorageInfo() {
+      const todoBytes = (localStorage.getItem("dashboard_todos") || "").length;
+      const noteBytes = (localStorage.getItem("dashboard_quick_note") || "").length;
+      const total = todoBytes + noteBytes;
+      storageInfoEl.textContent = `Dati locali: ~${total} byte`;
+    }
+
+    quickNoteEl.addEventListener("input", saveNote);
+    clearNoteBtn.addEventListener("click", clearNote);
+    loadNote();
+  </script>
+</body>
+</html>
